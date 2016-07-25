@@ -235,6 +235,11 @@ static const CGFloat kLabelsFontSize = 12.0f;
     return CGRectGetMinX(self.sliderLine.frame) + offset;
 }
 
+- (BOOL)selectedMaximumShouldBeInfinity
+{
+  return self.allowInfiniteSelectedMax && [NSNumber numberWithFloat:self.selectedMaximum] == [NSNumber numberWithFloat:self.maxValue];
+}
+
 - (void)updateLabelValues {
     if (self.hideLabels || [self.numberFormatterOverride isEqual:[NSNull null]]){
         self.minLabel.string = @"";
@@ -246,7 +251,7 @@ static const CGFloat kLabelsFontSize = 12.0f;
 
     self.minLabel.string = [formatter stringFromNumber:@(self.selectedMinimum)];
   
-    if (self.allowInfiniteSelectedMax && [NSNumber numberWithFloat:self.selectedMaximum] == [NSNumber numberWithFloat:self.maxValue] ) {
+    if ([self selectedMaximumShouldBeInfinity]) {
       self.maxLabel.string = [NSString stringWithFormat:@"%@+", [formatter stringFromNumber:@(self.selectedMaximum)]];
     } else {
       self.maxLabel.string = [formatter stringFromNumber:@(self.selectedMaximum)];
@@ -394,8 +399,7 @@ static const CGFloat kLabelsFontSize = 12.0f;
 
     //update the delegate
     if (self.delegate && (self.leftHandleSelected || self.rightHandleSelected)){
-      if (self.allowInfiniteSelectedMax &&
-          [NSNumber numberWithFloat:self.selectedMaximum] == [NSNumber numberWithFloat:self.maxValue]) {
+      if ([self selectedMaximumShouldBeInfinity]) {
         [self.delegate rangeSlider:self didChangeSelectedMinimumValue:self.selectedMinimum andMaximumValue:INFINITY];
       } else {
         [self.delegate rangeSlider:self didChangeSelectedMinimumValue:self.selectedMinimum andMaximumValue:self.selectedMaximum];
